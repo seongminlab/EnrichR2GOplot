@@ -17,22 +17,20 @@ knitr::opts_chunk$set(
 ```
 
 ## EnrichR2GOplot tutorial
-This packages are refer other two packages, **EnrichR** and **GOplot**.  
-EnrichR see <https://maayanlab.cloud/Enrichr/>  
-GOplot see <https://wencke.github.io>  
-This package was created to process EncirhR result data and use it for GOplot.
-Therefore, you must use the version of GO DB specified below.
----
-  
-**__requirement packages__**  
-  
-devtools  
-tidyverse  
-GOplot  
-enrichR  
+
+This packages are refer other two packages, **EnrichR** and **GOplot**.\
+EnrichR see <https://maayanlab.cloud/Enrichr/>\
+GOplot see <https://wencke.github.io>\
+This package was created to process EncirhR result data and use it for GOplot. Therefore, you must use the version of GO DB specified below. ---
+
+**requirement packages**
+
+devtools\
+tidyverse\
+GOplot\
+enrichR
 
 # Installation
-
 
 ```{r, eval=F}
 if (!require("devtools", quietly = TRUE))
@@ -44,23 +42,24 @@ if (!require("GOplot", quietly = TRUE))
 if (!require("enrichR", quietly = TRUE))
     install.packages("enrichR")
 
-#devtools::install_github("")
+devtools::install_github("seongminlab/EnrichR2GOplot")
 ```
 
-
 # Usage example
+
 ```{r setup}
 #library(EnrichR2GOplot)
 library(GOplot)
 devtools::load_all()
 ```
 
-
 ## 1.Example dataset for EncirhR to GOdb
+
 ```{r}
 data(DEPs)
 head(DEPs)
 ```
+
 ```{r}
 data(GOdb)
 print(GOdb)
@@ -72,6 +71,7 @@ cutoff <- 0.05
 ```
 
 ## 2. EnrichR2GOplot
+
 ```{r}
 result <- EnrichR2GOplot(DEPs, GOdb,cutoff)
 
@@ -80,12 +80,14 @@ KEGG.result <- result$EnrichR.KEGG
 circ <- result$circ
 ```
 
-
 ## 3. Visualize circ with GOplot pkg
+
 see other visualize options <https://wencke.github.io>
+
 ```{r , fig.width =16, fig.height = 10, dpi = 100}
 GOBar(circ, display="multiple")
 ```
+
 ```{r , fig.width =16, fig.height = 10, dpi = 100}
 GOBubble(circ, labels = 3)
 ```
@@ -93,8 +95,6 @@ GOBubble(circ, labels = 3)
 ```{r , fig.width =16, fig.height = 10, dpi = 100}
 GOBubble(circ, title = 'Bubble plot with background colour', display = 'multiple', bg.col = T, labels = 3)  
 ```
-
-
 
 ## 4. Export GO and KEGG results by EnrichR & GOplot
 
@@ -116,7 +116,6 @@ rmarkdown::paged_table(head(export$Export.EnrichR2GOplot.GO))
 rmarkdown::paged_table(head(export$Export.EnrichR2GOplot.KEGG))
 ```
 
-
 ```{r, eval=F}
 library(openxlsx)
 
@@ -134,17 +133,16 @@ saveWorkbook(output_xlsx, file = "Export_DEPs_EnrichR2GOplot_Aug_2023.xlsx")
 
 ```
 
-
----
-
+------------------------------------------------------------------------
 
 # Options
-Support two functions  
-1. Uniprot Accession to Gene Name  
+
+Support two functions\
+1. Uniprot Accession to Gene Name\
 2. Running EnrichR and export by table
 
-
 ## 1. Uniprot Accession to Gene Name
+
 ```{r}
 Accession <- c("O95905-1","P04439-2","P08246")
 Uniprot_to_GeneNames <- UniprotAccession2GeneName(Accession)
@@ -154,10 +152,9 @@ Uniprot_to_GeneNames <- UniprotAccession2GeneName(Accession)
 rmarkdown::paged_table(Uniprot_to_GeneNames)
 ```
 
-
-
 ## 2. Run EnrichR with user selected GO database
-database were selected from EnrichR homepage 
+
+database were selected from EnrichR homepage
 
 ```{r}
 library(enrichR)
@@ -169,7 +166,6 @@ head(dbs)
 ```{r, echo=F}
 rmarkdown::paged_table(dbs)
 ```
-
 
 ```{r}
 Select_DB <- c("GO_Molecular_Function_2015","GO_Cellular_Component_2015","GO_Cellular_Component_2015")
@@ -189,6 +185,7 @@ print(Select_DB)
 ```{r, eval=F}
 head(Genes)
 ```
+
 ```{r, echo=F}
 rmarkdown::paged_table(Genes)
 ```
@@ -198,10 +195,6 @@ rmarkdown::paged_table(Genes)
 DEPs2EncirhR(Genes, Select_DB)
 ```
 
-
 ```{r}
 sessionInfo()
 ```
-
-
-
