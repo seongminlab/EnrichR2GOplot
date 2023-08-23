@@ -1,0 +1,207 @@
+---
+title: "introduction"
+author : "Seongmin Cheon"
+date : "23, Aug, 2023"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## EnrichR2GOplot tutorial
+This packages are refer other two packages, **EnrichR** and **GOplot**.  
+EnrichR see <https://maayanlab.cloud/Enrichr/>  
+GOplot see <https://wencke.github.io>  
+This package was created to process EncirhR result data and use it for GOplot.
+Therefore, you must use the version of GO DB specified below.
+---
+  
+**__requirement packages__**  
+  
+devtools  
+tidyverse  
+GOplot  
+enrichR  
+
+# Installation
+
+
+```{r, eval=F}
+if (!require("devtools", quietly = TRUE))
+    install.packages("devtools")
+if (!require("tidyverse", quietly = TRUE))
+    install.packages("tidyverse")
+if (!require("GOplot", quietly = TRUE))
+    install.packages("GOplot")
+if (!require("enrichR", quietly = TRUE))
+    install.packages("enrichR")
+
+#devtools::install_github("")
+```
+
+
+# Usage example
+```{r setup}
+#library(EnrichR2GOplot)
+library(GOplot)
+devtools::load_all()
+```
+
+
+## 1.Example dataset for EncirhR to GOdb
+```{r}
+data(DEPs)
+head(DEPs)
+```
+```{r}
+data(GOdb)
+print(GOdb)
+```
+
+```{r}
+# Minimum cut-off of adj.p-value for encirhment analysis by EnrichR,  you can use 1 (not use for p-value filter) or 0.01 (strict cut-off)
+cutoff <- 0.05
+```
+
+## 2. EnrichR2GOplot
+```{r}
+result <- EnrichR2GOplot(DEPs, GOdb,cutoff)
+
+GO.result <- result$EnrichR.GO
+KEGG.result <- result$EnrichR.KEGG
+circ <- result$circ
+```
+
+
+## 3. Visualize circ with GOplot pkg
+see other visualize options <https://wencke.github.io>
+```{r , fig.width =16, fig.height = 10, dpi = 100}
+GOBar(circ, display="multiple")
+```
+```{r , fig.width =16, fig.height = 10, dpi = 100}
+GOBubble(circ, labels = 3)
+```
+
+```{r , fig.width =16, fig.height = 10, dpi = 100}
+GOBubble(circ, title = 'Bubble plot with background colour', display = 'multiple', bg.col = T, labels = 3)  
+```
+
+
+
+## 4. Export GO and KEGG results by EnrichR & GOplot
+
+```{r}
+#result <- EnrichR2GOplot(DEPs, GOdb,cutoff)
+export <- export_table_EnrichR2GOplot(result, DEPs, cutoff)
+```
+
+```{r, eval=F}
+head(export$Export.EnrichR2GOplot.GO)
+head(export$Export.EnrichR2GOplot.KEGG)
+```
+
+```{r,echo=F}
+rmarkdown::paged_table(head(export$Export.EnrichR2GOplot.GO))
+```
+
+```{r,echo=F}
+rmarkdown::paged_table(head(export$Export.EnrichR2GOplot.KEGG))
+```
+
+
+```{r, eval=F}
+library(openxlsx)
+
+output_xlsx <- createWorkbook()
+sheet1 <- "GeneOntologyResults"
+sheet2 <- "KEGG_Results"
+
+addWorksheet(output_xlsx , sheet1)
+addWorksheet(output_xlsx , sheet2)
+
+writeDataTable(output_xlsx,sheet1,export$Export.EnrichR2GOplot.GO)
+writeDataTable(output_xlsx,sheet2,export$Export.EnrichR2GOplot.KEGG)
+
+saveWorkbook(output_xlsx, file = "Export_DEPs_EnrichR2GOplot_Aug_2023.xlsx")
+
+```
+
+
+---
+
+
+# Options
+Support two functions  
+1. Uniprot Accession to Gene Name  
+2. Running EnrichR and export by table
+
+
+## 1. Uniprot Accession to Gene Name
+```{r}
+Accession <- c("O95905-1","P04439-2","P08246")
+Uniprot_to_GeneNames <- UniprotAccession2GeneName(Accession)
+```
+
+```{r,echo=F}
+rmarkdown::paged_table(Uniprot_to_GeneNames)
+```
+
+
+
+## 2. Run EnrichR with user selected GO database
+database were selected from EnrichR homepage 
+
+```{r}
+library(enrichR)
+setEnrichrSite("Enrichr")
+dbs <- listEnrichrDbs()
+head(dbs)
+```
+
+```{r, echo=F}
+rmarkdown::paged_table(dbs)
+```
+
+
+```{r}
+Select_DB <- c("GO_Molecular_Function_2015","GO_Cellular_Component_2015","GO_Cellular_Component_2015")
+#or others.... 
+```
+
+```{r, eval=F}
+head(Select_DB)
+```
+
+```{r, echo=F}
+data(DEPs)
+Genes <- data.frame(GeneName = DEPs$GeneName) 
+print(Select_DB)
+```
+
+```{r, eval=F}
+head(Genes)
+```
+```{r, echo=F}
+rmarkdown::paged_table(Genes)
+```
+
+```{r, eval=F}
+#Run EnrichR with selected database
+DEPs2EncirhR(Genes, Select_DB)
+```
+
+
+```{r}
+sessionInfo()
+```
+
+
+

@@ -1,0 +1,26 @@
+Package: EnrichR2GOplot
+Title: Gene ontology analysis with EnrichR, Convert Z-score with GOplot pkg
+Version: 0.1
+Authors@R: 
+    person("Seongmin", "Cheon", , "s.cheon1995@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Gene Ontology analysis pipeline with EnrichR and GOplots.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    dplyr,
+    enrichR,
+    ggplot2,
+    GOplot,
+    httr,
+    stringr,
+    tidyr
+Depends: 
+    R (>= 4.10)
+LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
