@@ -1,8 +1,8 @@
-#Accession <- c("O95905-1","P04439-2","P08246")
+#Accession <- c("O95905-1","P04439-2","P08246","P62805)
 
 
 #' UniprotAccession2GeneName
-#'
+#' Version update 1.1
 #' @import dplyr
 #' @import httr
 #' @param Accession Uniprot Accession ID,  support to isoforms format Oxxxx-1 , Import by Vector format ,  Verification required for legacy Accession number such as A00XXXX
@@ -27,7 +27,7 @@ UniprotAccession2GeneName <- function(Accession){
         }
     }
     files = list(
-        ids = paste(Import$Entry,collapse=" ,") ,    # important!!
+        ids = paste(unique(Import$Entry),collapse=" ,") ,    # important!!
         from = "UniProtKB_AC-ID",
         to = "Gene_Name"
     )
@@ -44,9 +44,12 @@ UniprotAccession2GeneName <- function(Accession){
         r <- GET(url = url, accept_json())
         resultsTable = read.table(text = content(r), sep = "\t", header=TRUE)
         #print(resultsTable)
-        resultsTable<- resultsTable %>% rename(., all_of(c(Entry="From",GeneName="To")))
+        unique.resultTable<- resultsTable %>% rename(., all_of(c(Entry="From",Genes="To")))  %>% aggregate(Genes~Entry, FUN=paste0) %>% data.frame
+
+        unique.resultTable$GeneName <- unique.resultTable$Genes %>% data.frame %>% .[1,] %>% unname %>% as.character()
+        resultsTable <- unique.resultTable %>% select(c(Entry,GeneName))
 
         return(full_join(Import,resultsTable,by="Entry" ))
     }
-    }
+}
 
