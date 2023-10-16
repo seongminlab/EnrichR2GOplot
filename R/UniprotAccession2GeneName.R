@@ -44,10 +44,8 @@ UniprotAccession2GeneName <- function(Accession){
         r <- GET(url = url, accept_json())
         resultsTable = read.table(text = content(r), sep = "\t", header=TRUE)
         #print(resultsTable)
-        unique.resultTable<- resultsTable %>% rename(., all_of(c(Entry="From",Genes="To")))  %>% aggregate(Genes~Entry, FUN=paste0) %>% data.frame
-
-        unique.resultTable$GeneName <- unique.resultTable$Genes %>% data.frame %>% .[1,] %>% unname %>% as.character()
-        resultsTable <- unique.resultTable %>% select(c(Entry,GeneName))
+        unique.resultTable<- resultsTable %>% rename(., all_of(c(Entry="From",Genes="To")))  %>% aggregate(.,Genes~.,FUN=paste,collapse=",") %>% data.frame
+        resultsTable <- unique.resultTable %>% mutate(File=as.character(Genes)) %>% separate(File,c("GeneName"), sep=",")  %>% select(c(Entry,GeneName))
 
         return(full_join(Import,resultsTable,by="Entry" ))
     }
